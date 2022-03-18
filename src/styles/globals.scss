@@ -1,0 +1,38 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root{
+  --white: #fff;
+  --gray-body: #282C34;
+  --link: #ff1493;  
+}
+
+
+@media(max-width: 1080px) {
+  html{
+      font-size: 93.75%;
+  }
+}
+
+@media(max-width: 720px) {
+  html{
+      font-size: 87.5%;
+  }
+}
+
+body{
+  background-color: var(--gray-body);
+  color: var(--white);
+}
+
+body, input, textarea, select, button{
+  font: 400 1rem "Inter", sans-serif;    
+}
+
+a{
+  color: var(--link);
+  text-decoration: none;
+  }
