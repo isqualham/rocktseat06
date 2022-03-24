@@ -86,17 +86,17 @@ export default function Post({post}: PostProps){
             <h1>{post.data.title}</h1>
 
             <div>
-                <AiOutlineCalendar/>
-                <time>
-                  {
-                    format(new Date(post.first_publication_date),
-                    'dd MMM yyyy', {locale: ptBR,})                          
-                  }
-                    </time>
-                  <FaUserTie />  
-                  <span>{post.data.author}</span>
-                  <FiClock />
-                  <span>{`${readingTime} min`}</span> 
+              <AiOutlineCalendar/>
+              <time>
+                {
+                  format(new Date(post.first_publication_date),
+                  'dd MMM yyyy', {locale: ptBR,})                          
+                }
+                </time>
+                <FaUserTie />  
+                <span>{post.data.author}</span>
+                <FiClock />
+                <span>{`${readingTime} min`}</span>                   
                                  
             </div>
 
@@ -109,8 +109,7 @@ export default function Post({post}: PostProps){
               );
             })} 
 
-                                                 
-
+            
         </section>
       </main>
     </>
@@ -120,37 +119,35 @@ export default function Post({post}: PostProps){
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const prismic = getPrismicClient();
-
-  const posts = await prismic.query([
-    Prismic.Predicates.at('document.type', 'posts'),
-    ]);
-
-    const paths = posts.results.map(post =>{
-      return {
-        params: {
-          slug: post.uid
-        }
-      }
-    })
+  const postsResponse = await prismic.query(
+    [Prismic.predicates.at('document.type', 'posts')],
+    {
+      fetch: ['posts.uid'],
+      pageSize: 3,
+    }
+  );
+  const paths = postsResponse.results.map(post => {
+    return {
+      params: { slug: post.uid },
+    };
+  });
 
   return {
-      paths: [],
-      fallback: true
-  }
-}
+    paths,
+    fallback: true,
+  };
+};
 
-export const getStaticProps : GetStaticProps = async ({ params }) => {  ;
-    
+export const getStaticProps : GetStaticProps = async ({params,}) => {    
   const {slug} = params;
-
   const prismic = getPrismicClient()
 
-  const response = await prismic.getByUID<any>('posts', String(slug),{})
-  
+  const response = await prismic.getByUID<any>('posts', String(slug),{}) 
+
   return {
       props:{
         post: response,
       },
-      redirect: 60 * 30 * 24, // 1day
+      revalidate: 60 * 30 * 24, // 1day
   }
 }

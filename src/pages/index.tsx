@@ -97,18 +97,22 @@ interface HomeProps {
         <section className={styles.posts}>          
 
           {posts.map(post =>(
-              <Link href={`/post/${post.uid}`}>
-                <a href="#" key={post.uid} >                   
+              <Link href={`/post/${post.uid}`} key={post.uid}>
+                <a href="#" >                   
                   <h1>{post.data.title}</h1>
                   <p>{post.data.subtitle}</p>
                   <div>
                     <AiOutlineCalendar/>
-                    <time>                      
-                        {post.first_publication_date}
+                    <time>
+                      {
+                        format(new Date(post.first_publication_date),
+                        'dd MMM yyyy', {locale: ptBR,})                          
+                      }
                     </time> 
 
                     <FaUserTie />  
                     <span>{post.data.author}</span>
+                    
                   </div>
                 </a>
               </Link>                        
@@ -127,19 +131,20 @@ interface HomeProps {
    )
   }
 
+ 
 export const getStaticProps : GetStaticProps = async () => {
   const prismic = getPrismicClient();
   const postsResponse = await prismic.query<any>([
     Prismic.Predicates.at('document.type', 'posts')
 ],{
-    fetch: ['posts.title', 'posts.subtitle', 'posts.author', 'posts.content',],
+    fetch: ['posts.title', 'posts.subtitle', 'posts.author'],
     pageSize: 1,
-})
+});
 
 const posts = postsResponse.results.map(post => {
   return {
     uid: post.uid,
-    first_publication_date: format(new Date(post.first_publication_date),'dd  MMM yyyy', {locale: ptBR,}),
+    first_publication_date: post.first_publication_date,
     data: {
       title: post.data.title,
       subtitle: post.data.subtitle,
@@ -148,7 +153,7 @@ const posts = postsResponse.results.map(post => {
   };
 });
 
-console.log(JSON.stringify(postsResponse, null, 2))
+//console.log(JSON.stringify(postsResponse, null, 2))
 
 return {
   props: {
